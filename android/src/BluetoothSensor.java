@@ -238,15 +238,6 @@ public final class BluetoothSensor
             listener.onBarometricPressureSensor(pressure / 1000.0f, 0.001f);
         }
       }
-      /* GATT LNS (FlyBeeper) */
-      if (BluetoothUuids.GATT_LOCATION_AND_NAVIGATION_SERVICE.equals(c.getService().getUuid())){
-        if (BluetoothUuids.FB_TAS_CHARACTERISTIC.equals(c.getUuid())) {
-          final int tas = c.getIntValue(c.FORMAT_SINT16, 0);
-          // TODO: implement onTAS to provide True Air Speed from external BT sensor
-          // if(tas != 0)
-          //   listener.onTAS(tas / 10.0f);
-        }
-      }
     } catch (NullPointerException e) {
       /* probably caused by a malformed value - ignore */
     } finally {
@@ -336,16 +327,6 @@ public final class BluetoothSensor
     if (service != null) {
       BluetoothGattCharacteristic c =
         service.getCharacteristic(BluetoothUuids.GATT_PRESSURE_CHARACTERISTIC);
-      if (c != null) {
-        setStateSafe(STATE_READY);
-        enableNotification(c);
-      }
-    }
-    /* GATT standart LNS (FlyBeeper) */
-    service = gatt.getService(BluetoothUuids.GATT_LOCATION_AND_NAVIGATION_SERVICE);
-    if (service != null) {
-      BluetoothGattCharacteristic c =
-        service.getCharacteristic(BluetoothUuids.FB_TAS_CHARACTERISTIC);
       if (c != null) {
         setStateSafe(STATE_READY);
         enableNotification(c);
