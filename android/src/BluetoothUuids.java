@@ -58,4 +58,16 @@ public interface BluetoothUuids {
     UUID.fromString("aba27100-143b-4b81-a444-edcd0000f024");
   UUID FLYTEC_SENSBOX_SYSTEM_CHARACTERISTIC =
     UUID.fromString("aba27100-143b-4b81-a444-edcd0000f025");
+
+  /* FlyBeeper services */
+  UUID GATT_ENVIRONMENTAL_SENSING_SERVICE =
+    UUID.fromString("0000181a-0000-1000-8000-00805f9b34fb");
+  UUID GATT_LOCATION_AND_NAVIGATION_SERVICE =
+    UUID.fromString("00001819-0000-1000-8000-00805f9b34fb");
+  /* FlyBeeper characteristics */
+  UUID GATT_PRESSURE_CHARACTERISTIC =
+    UUID.fromString("00002a6d-0000-1000-8000-00805f9b34fb");
+  UUID FB_TAS_CHARACTERISTIC =
+    UUID.fromString("234337bf-f931-4d2d-a13c-07e2f06a0249");
+
 }

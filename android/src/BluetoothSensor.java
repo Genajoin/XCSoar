@@ -120,7 +120,7 @@ public final class BluetoothSensor
   /**
    * Data in the characteristic has little endian byteorder.
    * Lowest bit of flags indicates valid ignitions_per_sec reading.
-   * 0 Kelvin indicates invalid temperatures e.g 
+   * 0 Kelvin indicates invalid temperatures e.g
    * no temperature sensor present.
   */
   private void engineSensorDataToListeners(BluetoothGattCharacteristic c) {
@@ -230,6 +230,23 @@ public final class BluetoothSensor
           listener.onTemperature(CELSIUS_OFFSET + temperatureCelsius);
         }
       }
+      /* GATT ESS (FlyBeeper) */
+      if (BluetoothUuids.GATT_ENVIRONMENTAL_SENSING_SERVICE.equals(c.getService().getUuid())) {
+        if (BluetoothUuids.GATT_PRESSURE_CHARACTERISTIC.equals(c.getUuid())) {
+          final int pressure = c.getIntValue(c.FORMAT_UINT32, 0);
+          if(pressure != 0)
+            listener.onBarometricPressureSensor(pressure / 1000.0f, 0.001f);
+        }
+      }
+      /* GATT LNS (FlyBeeper) */
+      if (BluetoothUuids.GATT_LOCATION_AND_NAVIGATION_SERVICE.equals(c.getService().getUuid())){
+        if (BluetoothUuids.FB_TAS_CHARACTERISTIC.equals(c.getUuid())) {
+          final int tas = c.getIntValue(c.FORMAT_SINT16, 0);
+          // TODO: implement onTAS to provide True Air Speed from external BT sensor
+          // if(tas != 0)
+          //   listener.onTAS(tas / 10.0f);
+        }
+      }
     } catch (NullPointerException e) {
       /* probably caused by a malformed value - ignore */
     } finally {
@@ -312,6 +329,27 @@ public final class BluetoothSensor
       c = service.getCharacteristic(BluetoothUuids.FLYTEC_SENSBOX_SYSTEM_CHARACTERISTIC);
       if (c != null)
         enableNotification(c);
+    }
+
+    /* GATT standart ESS (FlyBeeper) */
+    service = gatt.getService(BluetoothUuids.GATT_ENVIRONMENTAL_SENSING_SERVICE);
+    if (service != null) {
+      BluetoothGattCharacteristic c =
+        service.getCharacteristic(BluetoothUuids.GATT_PRESSURE_CHARACTERISTIC);
+      if (c != null) {
+        setStateSafe(STATE_READY);
+        enableNotification(c);
+      }
+    }
+    /* GATT standart LNS (FlyBeeper) */
+    service = gatt.getService(BluetoothUuids.GATT_LOCATION_AND_NAVIGATION_SERVICE);
+    if (service != null) {
+      BluetoothGattCharacteristic c =
+        service.getCharacteristic(BluetoothUuids.FB_TAS_CHARACTERISTIC);
+      if (c != null) {
+        setStateSafe(STATE_READY);
+        enableNotification(c);
+      }
     }
 
     if (state == STATE_LIMBO)
